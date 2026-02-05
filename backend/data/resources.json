@@ -1,0 +1,124 @@
+{
+  "employment": {
+    "federal": [
+      {
+        "name": "U.S. Department of Labor - Wage and Hour Division",
+        "phone": "1-866-487-9243",
+        "website": "https://www.dol.gov/agencies/whd",
+        "services": ["File wage complaint", "Learn about labor laws"]
+      }
+    ],
+    "massachusetts": [
+      {
+        "name": "Massachusetts Attorney General - Fair Labor Division",
+        "phone": "617-727-3465",
+        "website": "https://www.mass.gov/service-details/file-a-workplace-complaint",
+        "services": ["Wage theft complaints", "Workplace discrimination"]
+      },
+      {
+        "name": "Greater Boston Legal Services",
+        "phone": "617-371-1234",
+        "website": "https://www.gbls.org",
+        "services": ["Free legal aid for low-income workers"],
+        "eligibility": "Income below 125% of federal poverty line"
+      }
+    ]
+  },
+  "housing": {
+    "massachusetts": [
+      {
+        "name": "Massachusetts Attorney General - Consumer Advocacy",
+        "phone": "617-727-8400",
+        "website": "https://www.mass.gov/housing-consumer-complaints",
+        "services": ["Tenant rights", "Security deposit disputes", "Roommate disputes"]
+      },
+      {
+        "name": "City of Boston Inspectional Services",
+        "phone": "617-635-5300",
+        "website": "https://www.boston.gov/departments/inspectional-services",
+        "services": ["Report housing code violations", "Mold complaints"]
+      },
+      {
+        "name": "Metropolitan Boston Housing Partnership",
+        "phone": "617-425-6700",
+        "website": "https://www.mbhp.org",
+        "services": ["Tenant counseling", "Housing search assistance"]
+      }
+    ]
+  },
+  "immigration": {
+    "federal": [
+      {
+        "name": "ACLU Immigrants' Rights",
+        "phone": "1-877-224-1341",
+        "website": "https://www.aclu.org/know-your-rights/immigrants-rights",
+        "services": ["Know your rights with ICE", "Legal resources"]
+      }
+    ]
+  },
+  "criminal": {
+    "federal": [
+      {
+        "name": "ACLU - Police Encounters",
+        "website": "https://www.aclu.org/know-your-rights/stopped-by-police",
+        "services": ["Know your rights during police stops"]
+      }
+    ],
+    "massachusetts": [
+      {
+        "name": "Victim Rights Law Center",
+        "phone": "617-399-6720",
+        "website": "https://www.victimrights.org",
+        "services": ["Legal help for crime victims", "Restraining orders"]
+      }
+    ]
+  },
+  "mental_health": {
+    "federal": [
+      {
+        "name": "988 Suicide & Crisis Lifeline",
+        "phone": "988",
+        "website": "https://988lifeline.org",
+        "services": ["24/7 crisis support", "Suicide prevention", "Emotional support"]
+      },
+      {
+        "name": "Crisis Text Line",
+        "phone": "Text HOME to 741741",
+        "website": "https://www.crisistextline.org",
+        "services": ["24/7 text-based crisis support"]
+      },
+      {
+        "name": "SAMHSA National Helpline",
+        "phone": "1-800-662-4357",
+        "website": "https://www.samhsa.gov/find-help/national-helpline",
+        "services": ["Mental health and substance abuse referrals", "Treatment facility locator"]
+      }
+    ],
+    "massachusetts": [
+      {
+        "name": "Massachusetts Department of Mental Health",
+        "phone": "1-877-382-1609",
+        "website": "https://www.mass.gov/orgs/department-of-mental-health",
+        "services": ["Crisis services", "Mental health resources"]
+      }
+    ]
+  },
+  "domestic_violence": {
+    "federal": [
+      {
+        "name": "National Domestic Violence Hotline",
+        "phone": "1-800-799-7233",
+        "website": "https://www.thehotline.org",
+        "services": ["24/7 crisis support", "Safety planning", "Resources"]
+      }
+    ],
+    "massachusetts": [
+      {
+        "name": "SafeLink (Massachusetts DV Hotline)",
+        "phone": "1-877-785-2020",
+        "website": "https://www.casamyrna.org/get-support/safelink",
+        "services": ["24/7 crisis support", "Safety planning", "Shelter referrals"]
+      }
+    ]
+  }
+}
