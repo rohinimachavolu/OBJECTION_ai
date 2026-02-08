@@ -1,14 +1,35 @@
-from groq import Groq
 import os
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
+
+def call_ollama(prompt: str, model: str = "llama3.1:8b") -> str:
+    """
+    Call local Ollama instance
+    """
+    try:
+        response = requests.post(
+            'http://localhost:11434/api/generate',
+            json={
+                'model': model,
+                'prompt': prompt,
+                'stream': False,
+                'options': {
+                    'temperature': 0.3,
+                }
+            },
+            timeout=60
+        )
+        return response.json()['response']
+    except Exception as e:
+        print(f"Ollama error: {e}")
+        return "Unable to generate action plan"
 
 def action_strategist_agent(query: str, rights_info: dict, triage_result: dict) -> dict:
     """
     Provides step-by-step action plan
     """
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     
     prompt = f"""You are a legal action strategist. Based on this situation, provide a clear action plan.
 
@@ -25,17 +46,8 @@ Provide:
 Be specific and actionable.
 """
     
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        model="llama-3.3-70b-versatile",
-        temperature=0.3,
-    )
+    action_plan = call_ollama(prompt)
     
     return {
-        "action_plan": chat_completion.choices[0].message.content
+        "action_plan": action_plan
     }

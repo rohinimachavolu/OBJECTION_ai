@@ -5,10 +5,10 @@ from orchestrator import run_legal_assistant
 
 app = FastAPI(title="OBJECTION.ai API")
 
-# Enable CORS for Streamlit
+# CORS - Allow React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000", "http://localhost:3001"],  # React dev server
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

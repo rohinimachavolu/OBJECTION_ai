@@ -1,5 +1,8 @@
 # ⚖️ OBJECTION.ai
-
+source venv/bin/activate
+Ollama : ollama serve
+frontend : streamlit run frontend/app.py
+backend : python backend/main.py   
 **Your Constitutional Copilot for Legal Rights**
 
 OBJECTION.ai is an AI-powered legal assistant that helps everyday people understand their legal rights, navigate complex situations, and access free resources - without needing expensive lawyers.

@@ -1,11 +1,33 @@
-from groq import Groq
 import os
 from dotenv import load_dotenv
 import sys
+import requests
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from rag import LegalRAG
 
 load_dotenv()
+
+def call_ollama(prompt: str, model: str = "llama3.1:8b") -> str:
+    """
+    Call local Ollama instance
+    """
+    try:
+        response = requests.post(
+            'http://localhost:11434/api/generate',
+            json={
+                'model': model,
+                'prompt': prompt,
+                'stream': False,
+                'options': {
+                    'temperature': 0.3,
+                }
+            },
+            timeout=60
+        )
+        return response.json()['response']
+    except Exception as e:
+        print(f"Ollama error: {e}")
+        return "Unable to generate response"
 
 def rights_explainer_agent(query: str, triage_result: dict) -> dict:
     """
@@ -18,9 +40,6 @@ def rights_explainer_agent(query: str, triage_result: dict) -> dict:
     
     rag_results = rag.search(search_query, n_results=2)
     legal_context = "\n\n".join(rag_results['documents'])
-    
-    # Generate explanation
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     
     prompt = f"""You are a legal rights expert. Explain the user's rights based on these laws.
 
@@ -40,32 +59,9 @@ Provide:
 Be clear, concise, and cite specific laws.
 """
     
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        model="llama-3.3-70b-versatile",
-        temperature=0.3,
-    )
+    explanation = call_ollama(prompt)
     
     return {
-        "explanation": chat_completion.choices[0].message.content,
+        "explanation": explanation,
         "sources": rag_results['metadatas']
     }
-
-# Test
-if __name__ == "__main__":
-    test_triage = {
-        "category": "employment",
-        "jurisdiction": {"state": "Massachusetts"},
-        "key_issues": ["overtime", "unpaid wages"]
-    }
-    
-    result = rights_explainer_agent(
-        "My boss hasn't paid me overtime",
-        test_triage
-    )
-    print(result['explanation'])

@@ -1,15 +1,36 @@
-from groq import Groq
 import os
 from dotenv import load_dotenv
 import json
+import requests
 
 load_dotenv()
+
+def call_ollama(prompt: str, model: str = "llama3.1:8b") -> str:
+    """
+    Call local Ollama instance
+    """
+    try:
+        response = requests.post(
+            'http://localhost:11434/api/generate',
+            json={
+                'model': model,
+                'prompt': prompt,
+                'stream': False,
+                'options': {
+                    'temperature': 0.1,
+                }
+            },
+            timeout=60
+        )
+        return response.json()['response']
+    except Exception as e:
+        print(f"Ollama error: {e}")
+        return "{}"
 
 def triage_agent(query: str, location: str) -> dict:
     """
     Classifies the legal issue and determines jurisdiction
     """
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     
     prompt = f"""You are a legal triage specialist. Analyze this situation and respond ONLY with valid JSON.
 
@@ -56,18 +77,7 @@ situation_type can be:
 - "legal_dispute" (normal legal issue)
 """
     
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        model="llama-3.3-70b-versatile",
-        temperature=0.1,
-    )
-    
-    response_text = chat_completion.choices[0].message.content
+    response_text = call_ollama(prompt)
     
     # Parse response
     try:
@@ -85,23 +95,15 @@ situation_type can be:
         # Active violence indicators (911 NOW)
         active_violence_keywords = ['attacking me', 'hitting me', 'has a gun', 'right now', 'currently', 'is hurting']
         
-        # Past threats/violence (HIGH priority, not 911)
-        past_violence_keywords = ['threatened', 'threatened me', 'said he would', 'showed me a', 'yesterday', 'last week']
-        
         # Check for mental health crisis
         if any(keyword in query_lower for keyword in mental_health_keywords):
             result['situation_type'] = 'mental_health_crisis'
-            result['urgency'] = 'high'  # Not critical - different resources needed
+            result['urgency'] = 'high'
         
         # Check for active violence
         elif any(keyword in query_lower for keyword in active_violence_keywords):
             result['situation_type'] = 'active_violence'
             result['urgency'] = 'critical'
-        
-        # Check for past violence/threats
-        elif any(keyword in query_lower for keyword in past_violence_keywords):
-            result['situation_type'] = 'past_violence'
-            result['urgency'] = 'high'
         
         else:
             result['situation_type'] = result.get('situation_type', 'legal_dispute')
@@ -109,7 +111,6 @@ situation_type can be:
         return result
     except Exception as e:
         print(f"Triage error: {e}")
-        # Fallback
         return {
             "category": "general",
             "jurisdiction": {"state": location.split(",")[-1].strip()},
@@ -121,33 +122,8 @@ situation_type can be:
 
 # Test
 if __name__ == "__main__":
-    # Test mental health case
-    print("Testing MENTAL HEALTH case:")
     result = triage_agent(
-        "I am very depressed and feel like dying because my roommate is continuously emotionally abusing me",
+        "My boss hasn't paid me overtime for the last 3 months",
         "Boston, MA"
     )
     print(json.dumps(result, indent=2))
-    print(f"Should show: Mental health resources (988), NOT 911")
-    
-    print("\n" + "="*50 + "\n")
-    
-    # Test active violence case
-    print("Testing ACTIVE VIOLENCE case:")
-    result = triage_agent(
-        "My partner is attacking me right now with a knife help",
-        "Boston, MA"
-    )
-    print(json.dumps(result, indent=2))
-    print(f"Should show: 911 emergency")
-    
-    print("\n" + "="*50 + "\n")
-    
-    # Test past threat case
-    print("Testing PAST THREAT case:")
-    result = triage_agent(
-        "My roommate threatened me yesterday and said he would hurt me",
-        "Boston, MA"
-    )
-    print(json.dumps(result, indent=2))
-    print(f"Should show: High priority, lawyer/police report, NOT 911")

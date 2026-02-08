@@ -1,14 +1,35 @@
-from groq import Groq
 import os
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
+
+def call_ollama(prompt: str, model: str = "llama3.1:8b") -> str:
+    """
+    Call local Ollama instance
+    """
+    try:
+        response = requests.post(
+            'http://localhost:11434/api/generate',
+            json={
+                'model': model,
+                'prompt': prompt,
+                'stream': False,
+                'options': {
+                    'temperature': 0.2,
+                }
+            },
+            timeout=90
+        )
+        return response.json()['response']
+    except Exception as e:
+        print(f"Ollama error: {e}")
+        return "Unable to generate document"
 
 def document_generator_agent(query: str, triage_result: dict, action_plan: dict) -> str:
     """
     Generates formal legal documents
     """
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
     
     category = triage_result.get('category')
     
@@ -35,15 +56,4 @@ The document should:
 Generate the complete document now.
 """
     
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": prompt,
-            }
-        ],
-        model="llama-3.3-70b-versatile",
-        temperature=0.2,
-    )
-    
-    return chat_completion.choices[0].message.content
+    return call_ollama(prompt)
